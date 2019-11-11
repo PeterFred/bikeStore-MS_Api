@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="BikeServiceContext-Web.config Connection String" description="BikeServiceContext Connection String used in web.config by the application to access the database." defaultValue="Data Source=(localdb)\MSSQLLocalDB; Initial Catalog=BikeServiceContext-20191111122157; Integrated Security=True; MultipleActiveResultSets=True; AttachDbFilename=|DataDirectory|BikeServiceContext-20191111122157.mdf" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\peter\.LINCOLN\\source\\repos\\bikeStore-MS_Api\\BikeService\\BikeService\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='BikeServiceContext']/@connectionString" />
+  </parameter>
+</parameters>
