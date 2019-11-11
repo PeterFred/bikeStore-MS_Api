@@ -22,6 +22,12 @@ namespace BikeService
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+            /*Bundling is a feature in ASP.NET 4.5 that makes it easy to combine or bundle multiple files into a single file. 
+             * Bundling reduces the number of requests to the server, which can improve page load time.*/
+            // New code:
+            bundles.Add(new ScriptBundle("~/bundles/app").Include(
+                      "~/Scripts/knockout-{version}.js",
+                      "~/Scripts/app.js"));
         }
     }
 }
