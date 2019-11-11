@@ -17,24 +17,132 @@ namespace BikeService.Controllers
     {
         private BikeServiceContext db = new BikeServiceContext();
 
-        // GET: api/Books
-        public IQueryable<Book> GetBooks()
-        {
-            return db.Books;
-            //Eager loading
-            //return db.books.Include(b => b.Author);
+        #region Non- DTO (Data Transfer Objects)
+        //// GET: api/Books
+        //public IQueryable<Book> GetBooks()
+        //{
+        //    return db.Books;
+        //    //Eager loading
+        //    //return db.books.Include(b => b.Author);
 
+        //}
+
+        //// GET: api/Books/5
+        //[ResponseType(typeof(Book))]
+        //public async Task<IHttpActionResult> GetBook(int id)
+        //{
+        //    Book book = await db.Books.FindAsync(id);
+        //    if (book == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return Ok(book);
+        //}
+
+        #endregion
+
+
+        /**
+         * NOTE THIS IS MANUALLY USING DTO TO MAP OBJECTS.
+         * You can use tools such as http://automapper.org/
+         */
+
+        #region Using DTO(Data Transfer Objects)    
+        // GET api/Books
+        public IQueryable<BookDto> GetBooks()
+        {
+            var books = from b in db.Books
+                        select new BookDto()
+                        {
+                            Id = b.Id,
+                            Title = b.Title,
+                            AuthorName = b.Author.Name
+                        };
+
+            return books;
         }
 
-        // GET: api/Books/5
-        [ResponseType(typeof(Book))]
+        // GET api/Books/5
+        [ResponseType(typeof(BookDetailDto))]
         public async Task<IHttpActionResult> GetBook(int id)
+        {
+            var book = await db.Books.Include(b => b.Author).Select(b =>
+                new BookDetailDto()
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Year = b.Year,
+                    Price = b.Price,
+                    AuthorName = b.Author.Name,
+                    Genre = b.Genre
+                }).SingleOrDefaultAsync(b => b.Id == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(book);
+        }
+
+        #region Non- DTO (Data Transfer Objects)
+        // POST: api/Books
+        //[ResponseType(typeof(Book))]
+        //public async Task<IHttpActionResult> PostBook(Book book)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
+
+        //    db.Books.Add(book);
+        //    await db.SaveChangesAsync();
+
+        //    return CreatedAtRoute("DefaultApi", new { id = book.Id }, book);
+        //}
+
+        #endregion
+
+        #region DTO (Data Transfer Objects)
+        // POST: api/Books
+        [ResponseType(typeof(BookDto))]
+        public async Task<IHttpActionResult> PostBook(Book book)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            db.Books.Add(book);
+            await db.SaveChangesAsync();
+
+            // New code:
+            // Load author name
+            db.Entry(book).Reference(x => x.Author).Load();
+
+            var dto = new BookDto()
+            {
+                Id = book.Id,
+                Title = book.Title,
+                AuthorName = book.Author.Name
+            };
+
+            return CreatedAtRoute("DefaultApi", new { id = book.Id }, dto);
+        }
+        #endregion
+
+        // DELETE: api/Books/5
+        [ResponseType(typeof(Book))]
+        public async Task<IHttpActionResult> DeleteBook(int id)
         {
             Book book = await db.Books.FindAsync(id);
             if (book == null)
             {
                 return NotFound();
             }
+
+            db.Books.Remove(book);
+            await db.SaveChangesAsync();
 
             return Ok(book);
         }
@@ -74,36 +182,6 @@ namespace BikeService.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Books
-        [ResponseType(typeof(Book))]
-        public async Task<IHttpActionResult> PostBook(Book book)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.Books.Add(book);
-            await db.SaveChangesAsync();
-
-            return CreatedAtRoute("DefaultApi", new { id = book.Id }, book);
-        }
-
-        // DELETE: api/Books/5
-        [ResponseType(typeof(Book))]
-        public async Task<IHttpActionResult> DeleteBook(int id)
-        {
-            Book book = await db.Books.FindAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            db.Books.Remove(book);
-            await db.SaveChangesAsync();
-
-            return Ok(book);
-        }
 
         protected override void Dispose(bool disposing)
         {

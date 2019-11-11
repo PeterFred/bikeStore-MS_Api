@@ -175,6 +175,8 @@
     <Compile Include="Models\Author.cs" />
     <Compile Include="Models\BikeServiceContext.cs" />
     <Compile Include="Models\Book.cs" />
+    <Compile Include="Models\BookDetailDto.cs" />
+    <Compile Include="Models\BookDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
