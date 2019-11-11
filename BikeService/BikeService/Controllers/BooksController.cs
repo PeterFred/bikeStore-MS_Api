@@ -85,7 +85,10 @@ namespace BikeService.Controllers
             return Ok(book);
         }
 
+        #endregion
+
         #region Non- DTO (Data Transfer Objects)
+
         // POST: api/Books
         //[ResponseType(typeof(Book))]
         //public async Task<IHttpActionResult> PostBook(Book book)
